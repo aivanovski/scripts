@@ -23,7 +23,7 @@ def main()
     isLaunchedFromCurrentDir = is_file_exists(currentPath, SETUP_SCRIPT_NAME)
 
     if isLaunchedFromCurrentDir
-        `ls -la #{currentPath} --color=never | grep "^-..x.*\.rb$"`
+        `ls -la #{currentPath} --color=never | grep "^-..x.*\...$"`
             .strip
             .split("\n")
             .map { |line| 
