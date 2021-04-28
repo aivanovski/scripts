@@ -2,20 +2,20 @@
 
 # Launches Rofi with menu: poweroff/suspend/reboot
 
-POWER_OFF = "poweroff"
-SUSPEND = "suspend"
-REBOOT = "reboot"
+actions = [
+    # [Name, Command]
+    ["Poweroff", "poweroff"],
+    ["Suspend", "systemctl suspend"],
+    ["Logout", "i3-msg exit"],
+    ["Reboot", "reboot"]
+]
 
-actions = [POWER_OFF, SUSPEND, REBOOT].join("|")
+names = actions.map { |a| a[0]}.join("|")
+selectedName = `echo "#{names}" | rofi -sep '|' -dmenu -i | xargs -r echo`.strip
 
-action = `echo "#{actions}" | rofi -sep '|' -dmenu -i | xargs -r echo`.strip
-
-case action
-when POWER_OFF
-    `poweroff`
-when SUSPEND
-    `systemctl suspend`
-when REBOOT
-    `reboot`
-end
-
+actions
+    .filter { |a| a[0] == selectedName }
+    .each { |a|
+        command = a[1]
+        `#{command}`
+    }
