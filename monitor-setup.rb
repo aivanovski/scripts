@@ -79,6 +79,17 @@ def setupVariableInPolybar(variableName, expectedValue, numberOfOccurence)
     end
 end
 
+def setup_variable_in_firefox_config(variableName, expectedValue)
+    configDirName = `ls $HOME/.mozilla/firefox | grep default`.strip
+    filePath = `echo $HOME/.mozilla/firefox/#{configDirName}/prefs.js`.strip
+    lineNumber = `grep -n "#{variableName}" "#{filePath}" | cut -d: -f1`.strip
+    currentValue = `grep "#{variableName}" "#{filePath}" | cut -d"," -f2 | cut -d\\" -f2`.strip
+
+    if currentValue != expectedValue && !lineNumber.empty?
+        replaceTextInFileAtLine("#{currentValue}", "#{expectedValue}", filePath, lineNumber)
+    end
+end
+
 def getMonitorIds()
     ids = `xrandr | grep " connected "`.strip.split("\n").map { |s| s.split(" ")[0]}
     # puts "monitorIds=#{ids}"
@@ -142,6 +153,8 @@ def setupEnvironmentDependsOnDpi(dpi)
         setupFontInPolybar("Fantasque Sans Mono\:pixelsize", "14", 1)
         setupFontInPolybar("Material Icons\:size", "16", 1)
         setupVariableInPolybar("height", "22", 1)
+
+        setup_variable_in_firefox_config("layout.css.devPixelsPerPx", "1")
     when DPI_HIGH
         puts "Setting up for High DPI..."
 
@@ -154,6 +167,8 @@ def setupEnvironmentDependsOnDpi(dpi)
         setupFontInPolybar("Fantasque Sans Mono\:pixelsize", "20", 1)
         setupFontInPolybar("Material Icons\:size", "24", 1)
         setupVariableInPolybar("height", "40", 1)
+
+        setup_variable_in_firefox_config("layout.css.devPixelsPerPx", "2")
     end
 end
 
