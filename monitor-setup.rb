@@ -80,13 +80,19 @@ def setupVariableInPolybar(variableName, expectedValue, numberOfOccurence)
 end
 
 def setup_variable_in_firefox_config(variableName, expectedValue)
-    configDirName = `ls $HOME/.mozilla/firefox | grep default`.strip
-    filePath = `echo $HOME/.mozilla/firefox/#{configDirName}/prefs.js`.strip
-    lineNumber = `grep -n "#{variableName}" "#{filePath}" | cut -d: -f1`.strip
-    currentValue = `grep "#{variableName}" "#{filePath}" | cut -d"," -f2 | cut -d\\" -f2`.strip
+    configDirName = `ls $HOME/.mozilla/firefox | grep default`
+        .strip
+        .split("\n")
+        .first()
 
-    if currentValue != expectedValue && !lineNumber.empty?
-        replaceTextInFileAtLine("#{currentValue}", "#{expectedValue}", filePath, lineNumber)
+    if !configDirName.empty?
+        filePath = `echo $HOME/.mozilla/firefox/#{configDirName}/prefs.js`.strip
+        lineNumber = `grep -n "#{variableName}" "#{filePath}" | cut -d: -f1`.strip
+        currentValue = `grep "#{variableName}" "#{filePath}" | cut -d"," -f2 | cut -d\\" -f2`.strip
+
+        if currentValue != expectedValue && !lineNumber.empty?
+            replaceTextInFileAtLine("#{currentValue}", "#{expectedValue}", filePath, lineNumber)
+        end
     end
 end
 
