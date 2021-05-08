@@ -96,6 +96,16 @@ def setup_variable_in_firefox_config(variableName, expectedValue)
     end
 end
 
+def setup_variable_in_alacritty(variableName, expectedValue)
+    filePath = `echo $HOME/.config/alacritty/alacritty.yml`.strip
+    lineNumber = `grep -n "#{variableName}: " "#{filePath}" | cut -d: -f1`.strip
+    currentValue = `grep "#{variableName}: " "#{filePath}" | cut -d: -f2`.strip
+
+    if currentValue != expectedValue
+        replaceTextInFileAtLine("#{variableName}: #{currentValue}", "#{variableName}: #{expectedValue}", filePath, lineNumber)
+    end 
+end
+
 def getMonitorIds()
     ids = `xrandr | grep " connected "`.strip.split("\n").map { |s| s.split(" ")[0]}
     # puts "monitorIds=#{ids}"
@@ -161,6 +171,12 @@ def setupEnvironmentDependsOnDpi(dpi)
         setupVariableInPolybar("height", "22", 1)
 
         setup_variable_in_firefox_config("layout.css.devPixelsPerPx", "1")
+
+        if determineMonitorEnvironment() == MONITOR_BUILT_IN
+            setup_variable_in_alacritty("size", "9")
+        else
+            setup_variable_in_alacritty("size", "11")
+        end
     when DPI_HIGH
         puts "Setting up for High DPI..."
 
