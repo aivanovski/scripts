@@ -184,11 +184,11 @@ def setupEnvironmentDependsOnDpi(dpi)
         setupXprofileVariable("GDK_DPI_SCALE", "0.9")
         setupXprofileVariable("QT_FONT_DPI", "192")
 
-        setupVariableInI3Config("font pango:monospace", "20")
+        setupVariableInI3Config("font pango:monospace", "28")
 
-        setupFontInPolybar("Fantasque Sans Mono\:pixelsize", "20", 1)
-        setupFontInPolybar("Material Icons\:size", "24", 1)
-        setupVariableInPolybar("height", "40", 1)
+        setupFontInPolybar("Fantasque Sans Mono\:pixelsize", "28", 1)
+        setupFontInPolybar("Material Icons\:size", "30", 1)
+        setupVariableInPolybar("height", "50", 1)
 
         setup_variable_in_firefox_config("layout.css.devPixelsPerPx", "2")
     end
