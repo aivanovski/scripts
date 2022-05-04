@@ -7,6 +7,7 @@ EDITOR = 'nvim'.freeze
 options = [
   '~/.bashrc',
   '~/.vimrc',
+  '~/.ideavimrc',
   '~/.config/i3/config',
   '~/.config/polybar/config.ini',
   '~/.config/nvim'
