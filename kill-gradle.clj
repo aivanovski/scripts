@@ -13,36 +13,40 @@
       (println (str "Error has occured: " (get result :err)))
       (System/exit 0))))
 
-(defn parse-process-line [line]
-  (def line-words (filter #(not (empty? %)) (str/split line #" ")))
-  (def pid (nth line-words 1))
-  (def command (str/join " " (nthrest line-words 10)))
-  (hash-map :pid pid, :command command))
+(defn parse-pid [line]
+  (let [words (filter #(not (empty? %)) (str/split line #" "))
+        pid (if (> (count words) 1) (nth words 1) nil)]
+    pid))
 
-(defn parse-pids [command]
-  (def output (run command))
+(defn parse-pids [output query]
   (->> (str/split output #"\n")
        (filter #(not-empty %))
-       (map parse-process-line)
-       (filter #(str/includes? (get % :command) "java"))
-       (map #(get % :pid))))
+       (filter #(str/includes? % "java"))
+       (filter #(str/includes? % query))
+       (map parse-pid)
+       (filter #(some? %))))
 
 (defn kill-process [pid]
   (run (str "kill -9 " pid)))
 
-(def gradle-daemons (parse-pids "ps aux | grep gradle | grep GradleDaemon"))
-(def kotlin-daemons (parse-pids "ps aux | grep gradle | grep KotlinCompileDaemon"))
+(defn main []
+  (let [output (run "ps aux | grep gradle")
+        gradle-daemons (parse-pids output "GradleDaemon")
+        kotlin-daemons (parse-pids output "KotlinCompileDaemon")]
 
-(if (empty? gradle-daemons)
-  (println "No Gradle Daemon")
-  (do 
-    (println (str "Killing Gradle Daemon: " (str/join ", " gradle-daemons)))
-    (doseq [pid gradle-daemons]
-      (kill-process pid))))
+    (do
+      (if (empty? gradle-daemons)
+        (println "No Gradle Daemon")
+        (do 
+          (println (str "Killing Gradle Daemon: " (str/join ", " gradle-daemons)))
+          (doseq [pid gradle-daemons]
+            (kill-process pid))))
 
-(if (empty? kotlin-daemons)
-  (println "No Kotlin Daemon")
-  (do 
-    (println (str "Killing Kotlin Daemon: " (str/join ", " kotlin-daemons)))
-    (doseq [pid kotlin-daemons]
-      (kill-process pid))))
+      (if (empty? kotlin-daemons)
+        (println "No Kotlin Daemon")
+        (do 
+          (println (str "Killing Kotlin Daemon: " (str/join ", " kotlin-daemons)))
+          (doseq [pid kotlin-daemons]
+            (kill-process pid)))))))
+
+(main)
