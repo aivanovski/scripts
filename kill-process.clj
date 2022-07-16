@@ -7,17 +7,12 @@
 
 (defn run [command]
   (let [result (sh "bash" "-c" command)]
-    (if (contains? result :out)
-      (:out result)
-      (do 
-        (println (str "Error has occured: " (get result :err)))
-        (System/exit 0)))))
+    (if (contains? result :out) (:out result) nil)))
 
-(def data (str/split (str/trim (run "ps --user \"$(id -u)\" -o pid,time,cmd | rofi -dmenu -i | xargs -r echo")) #" "))
-(def pid (if (> (count data) 2) (nth data 0) nil))
+(def pid (str/trim (run "ps --user \"$(id -u)\" -o pid,time,cmd | rofi -dmenu -i | awk '{print $1}'")))
 
 (if (and (some? pid) (not= pid "PID"))
   (do 
     (println (format "Killing process %s" pid))
-    (run (format "kill -9 %s" pid)
-    nil)))
+    (run (format "kill -9 %s" pid))
+    nil))
