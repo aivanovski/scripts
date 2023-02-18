@@ -6,7 +6,7 @@
          '[clojure.string :as str])
 
 (def COMMAND "echo '%s' | rofi -sep '|' -dmenu -i | xargs -r echo")
-(def INPUT_COMMAND "sleep 1 && xdotool key %s")
+(def INPUT_COMMAND "xdotool key %s")
 
 (defn run [command]
   (let
