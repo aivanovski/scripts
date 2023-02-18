@@ -10,9 +10,9 @@
 
 (defn run [command]
   (let
-   [result (sh "bash" "-c" command)]
-    (if (contains? result :out)
-      (str/trim (get result :out))
+   [result (:out (sh "bash" "-c" command))]
+    (if (not (nil? result))
+      (str/trim result)
       (System/exit 0))))
 
 (def data {"1 - ä" "U00E4",
