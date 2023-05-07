@@ -4,18 +4,15 @@
 
 actions = [
     # [Name, Command]
-    ["Poweroff", "poweroff"],
-    ["Suspend", "systemctl suspend"],
-    ["Logout", "i3-msg exit"],
-    ["Reboot", "reboot"]
+    ['Poweroff', 'poweroff'],
+    ['Suspend', 'systemctl suspend'],
+    ['Logout', 'i3-msg exit'],
+    ['Reboot', 'reboot']
 ]
 
-names = actions.map { |a| a[0]}.join("|")
-selectedName = `echo "#{names}" | rofi -sep '|' -dmenu -i | xargs -r echo`.strip
+names = actions.map { |a| a[0] }.join('|')
+selected_name = `echo "#{names}" | rofi -sep '|' -dmenu -i | xargs -r echo`.strip
 
 actions
-    .filter { |a| a[0] == selectedName }
-    .each { |a|
-        command = a[1]
-        `#{command}`
-    }
+  .filter { |action| action[0] == selected_name }
+  .each { |command| `#{command[1]}` }
