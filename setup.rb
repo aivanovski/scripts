@@ -2,56 +2,53 @@
 
 # Creates static links in ~/.local/bin for all executable files in current directory
 
-SETUP_SCRIPT_NAME = "setup.rb"
+SETUP_SCRIPT_NAME = 'setup.rb'.freeze
 
-def is_file_exists(dirPath, fileName)
-    `ls "#{dirPath}" --color=never | grep "^#{fileName}$"`.strip == fileName
+def file_exists(dir_path, file_name)
+  `ls "#{dir_path}" --color=never | grep "^#{file_name}$"`.strip == file_name
 end
 
-def remove_file_extension_from_name(name)
-    dotIdx = name.rindex('.')
+def format_executable_name(name)
+  dot_idx = name.rindex('.')
 
-    if dotIdx != nil
-        name.slice(0..dotIdx - 1)
-    else
-        name
-    end
+  if name.end_with? '.clj'
+    name
+  elsif dot_idx != nil
+    name.slice(0..dot_idx - 1)
+  else
+    name
+  end
 end
 
-def main()
-    currentPath = `pwd`.strip
-    isLaunchedFromCurrentDir = is_file_exists(currentPath, SETUP_SCRIPT_NAME)
+def main
+  current_path = `pwd`.strip
+  launched_from_current_dir = file_exists(current_path, SETUP_SCRIPT_NAME)
 
-    if isLaunchedFromCurrentDir
-        `ls -la #{currentPath} --color=never | grep "^-..x.*\...$"`
-            .strip
-            .split("\n")
-            .map { |line| 
-                line.split(" ")[8]
-            }
-            .filter { |name| name != SETUP_SCRIPT_NAME }
-            .each { |name|
-                executableName = remove_file_extension_from_name(name)
+  if launched_from_current_dir
+    `ls -la #{current_path} --color=never | grep "^-..x.*\...$"`
+      .strip
+      .split("\n")
+      .map { |line| line.split(' ')[8] }
+      .filter { |name| name != SETUP_SCRIPT_NAME }
+      .each { |name|
+        executable_name = format_executable_name(name)
 
-                src = "#{currentPath}/#{name}"
-                dst = "$HOME/.local/bin/#{executableName}"
+        src = "#{current_path}/#{name}"
+        dst = "$HOME/.local/bin/#{executable_name}"
 
-                successMessage = "Successfully created link to: #{dst}"
-                errorMessage = "Failed to create link to: #{src}"
+        success_message = "Successfully created link to: #{dst}"
+        error_message = "Failed to create link to: #{src}"
 
-                isLinkExists = is_file_exists("$HOME/.local/bin", executableName)
+        if file_exists('$HOME/.local/bin', executable_name)
+          `rm "#{dst}"`
+        end
 
-                if isLinkExists
-                    `rm "#{dst}"`
-                end
-
-                message = `ln -s "#{src}" "#{dst}" && echo "#{successMessage}" || echo "#{errorMessage}"`.strip
-                puts "#{message}"
-            }
-    else
-        puts "Script should be launched from its located directory"
-    end
+        message = `ln -s "#{src}" "#{dst}" && echo "#{success_message}" || echo "#{error_message}"`.strip
+        puts message.to_s
+      }
+  else
+    puts 'Script should be launched from its located directory'
+  end
 end
 
-main()
-
+main
