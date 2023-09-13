@@ -28,7 +28,6 @@
 
 (def run-dump (run "adb shell uiautomator dump"))
 (def dump (run "adb shell cat /sdcard/window_dump.xml"))
-(def lines (str/split (xml/indent-str (xml/parse-str dump)) #"\n"))
 
 (def lines (-> (run "adb shell cat /sdcard/window_dump.xml")
                (xml/parse-str)
