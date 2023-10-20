@@ -2,4 +2,5 @@
         org.clojure/core.async {:mvn/version "1.6.673"},
         org.clojure/tools.cli {:mvn/version "1.0.214"},
         org.clojure/data.csv {:mvn/version "1.0.0"},
-        org.clojure/core.match {:mvn/version "1.0.0"}}}
+        org.clojure/core.match {:mvn/version "1.0.0"}
+        org.babashka/cli {:mvn/version "0.7.53"}}}
