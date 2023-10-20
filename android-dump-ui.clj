@@ -27,7 +27,6 @@
   nil)
 
 (def run-dump (run "adb shell uiautomator dump"))
-(def dump (run "adb shell cat /sdcard/window_dump.xml"))
 
 (def lines (-> (run "adb shell cat /sdcard/window_dump.xml")
                (xml/parse-str)
